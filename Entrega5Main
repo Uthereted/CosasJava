@@ -1,0 +1,57 @@
+package ejercicios.ej5.datosLaborales;
+
+import java.io.IOException;
+
+/** Ejercicio 5 - Ficheros y Java Collections
+ * @author andoni.eguiluz @ ingenieria.deusto.es
+ */
+public class DatosLaboralesEuskadi {
+	public static void main(String[] args) throws IOException {
+		GestorDatos gestor = new GestorDatos();
+		gestor.cargarDatosTexto( "src/ejercicios/ej5/datosLaborales/datos empleo Euskadi.txt" );
+		System.out.println( "Todos los datos:" );
+		gestor.listaTodosLosDatos();
+
+		// Lo que deberá salir:
+		//	Abadiño	Bizkaia	Total	25 - 34	Mujeres	[609, 440, 427, 370, 364, 345, 333]
+		//	Abadiño	Bizkaia	Total	25 - 34	Total	[1258, 920, 885, 779, 758, 721, 670]
+		//	Abadiño	Bizkaia	Total	25 - 34	Hombres	[649, 480, 458, 409, 394, 376, 337]
+		//	Abadiño	Bizkaia	Total	55 - 64	Mujeres	[482, 504, 528, 528, 525, 533, 553]
+		//  ...
+		//	Zumarraga	Gipuzkoa	Población inactiva	16 - 24	Total	[484, 518, 511, 534, 550, 582, 597]
+		//	Zumarraga	Gipuzkoa	Población inactiva	16 - 24	Hombres	[240, 263, 245, 254, 274, 297, 292]
+
+		System.out.println( "\nGanancia de ocupación del 25% en estos años: ");
+		gestor.listaMunicipiosConGananciaOcupacion( 0.25 );
+		
+		// Lo que deberá salir:
+		//	Ganancia de ocupación del 25% en estos años: 
+		//	Arakaldo	Bizkaia	[52, 67, 79, 77, 83, 79, 80]
+		//	Astigarraga	Gipuzkoa	[2346, 2891, 3010, 3069, 3294, 3622, 3776]
+		//	Derio	Bizkaia	[2598, 2886, 3000, 3051, 3110, 3197, 3358]
+		//	Lemoiz	Bizkaia	[476, 587, 590, 606, 621, 636, 630]
+		//	Orendain	Gipuzkoa	[83, 92, 100, 101, 100, 104, 116]
+		//	Peñacerrada-Urizaharra	Araba	[139, 138, 145, 155, 152, 156, 174]
+		//	Urduliz	Bizkaia	[1569, 1873, 1934, 1955, 2041, 2147, 2391]
+
+		System.out.println( "\nMunicipios con más mujeres ocupadas que hombres: ");
+		gestor.listaMunicipiosConMasMujeresOcupadasQueHombresActuales();
+		// Lo que deberá salir:
+		//	Municipios con más mujeres ocupadas que hombres: 
+		//	Altzaga	Gipuzkoa	35 mujeres y 30 hombres
+		//	Arama	Gipuzkoa	48 mujeres y 42 hombres
+		//	Arratzu	Bizkaia	88 mujeres y 82 hombres
+		//	Donostia / San Sebastián	Gipuzkoa	39403 mujeres y 38494 hombres
+		//	Etxebarria	Bizkaia	152 mujeres y 148 hombres
+		//	Fruiz	Bizkaia	133 mujeres y 124 hombres
+		//	Getxo	Bizkaia	15744 mujeres y 15268 hombres
+		//	Mungia	Bizkaia	3888 mujeres y 3839 hombres
+		//	Nabarniz	Bizkaia	63 mujeres y 58 hombres
+		
+		// Prueba de guardado y cargado
+		gestor.guardaAFicheroBinario( "datos-euskadi.dat" );
+		gestor.cargaDeFicheroBinario( "datos-euskadi.dat" );
+		System.out.println( "\nComprobando de nuevo municipios con más mujeres ocupadas que hombres: ");
+		gestor.listaMunicipiosConMasMujeresOcupadasQueHombresActuales();
+	}
+}
