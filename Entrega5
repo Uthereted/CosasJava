@@ -1,0 +1,163 @@
+package ejercicios.ej5.datosLaborales;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.TreeMap;
+
+
+
+
+
+/** Clase contenedora de datos laborales Euskadi
+ * @author andoni.eguiluz @ ingenieria.deusto.es
+ */
+public class GestorDatos {
+
+	private ArrayList<Integer> anyos; // Lista de años de datos
+	private TreeMap<String,String> mapaProvincias;  // Clave localidad - valor provincia
+	private TreeMap<String,HashMap<String,HashMap<String,HashMap<String,ArrayList<Integer>>>>> mapaDatos;
+		// Clave localidad - valor mapa
+			// Clave actividad - malor mapa
+				// Clave edad - valor mapa
+					// Clave sexo - valor arraylist de datos enteros (población por años)
+	
+	public GestorDatos() {
+		// TODO
+		anyos = new ArrayList<Integer>();
+		mapaProvincias = new TreeMap<String,String>();
+		mapaDatos = new TreeMap<String,HashMap<String,HashMap<String,HashMap<String,ArrayList<Integer>>>>>();
+	}
+	
+	/** Carga datos de fichero de texto
+	 * @param nomFichero	Ruta del fichero a cargar. Debe tener líneas separadas por tabulador con localidad/comarca / provincia / actividad / edad / sexo / datos por años
+	 * @throws IOException 
+	 */
+	public void cargarDatosTexto( String nomFichero ) throws IOException {
+		try {
+			Scanner scanner = new Scanner( new File( nomFichero ) );
+			// Carga línea de cabecera
+			String linea = scanner.nextLine();
+			String[] datos = linea.split("\t");
+			// 0: localidad/comarca  1: provincia  2: actividad   3: edad  4: sexo  5 y sucesivos: años
+			anyos.clear();
+			for (int i=5; i<datos.length; i++) {
+				anyos.add( Integer.parseInt( datos[i] ) );
+			}
+			// Carga resto de líneas
+			int numLinea = 0;
+			while (scanner.hasNextLine()) {
+				linea = scanner.nextLine();
+				datos = linea.split("\t");
+				ArrayList<Integer> listaDatos = new ArrayList<>();
+				for (int i=5; i<datos.length; i++) {
+					listaDatos.add( Integer.parseInt( datos[i] ) );
+				}
+				procesaDatosLinea( datos[1], datos[0], datos[2], datos[3], datos[4], listaDatos );
+				numLinea++;
+			}
+			System.out.println( "Procesadas " + numLinea + " líneas de datos." );
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Procesa cada línea de datos
+	private void procesaDatosLinea( String provincia, String localidadOComarca, String actividad, String rangoEdad, String sexo, ArrayList<Integer> datos ) throws IOException {
+		// TODO
+		// System.out.println( provincia + " " + localidadOComarca + " " + datos );
+		 HashMap<String, HashMap<String, HashMap<String, ArrayList<Integer>>>> mapaActividades = mapaDatos.get(localidadOComarca);
+	       if (mapaActividades == null) {
+	           mapaActividades = new HashMap<String, HashMap<String, HashMap<String, ArrayList<Integer>>>>();
+	           mapaDatos.put(localidadOComarca, mapaActividades);
+	       }
+	       HashMap<String, HashMap<String, ArrayList<Integer>>> mapaEdades = mapaActividades.get(actividad);
+	       if (mapaEdades == null) {
+	           mapaEdades = new HashMap<String, HashMap<String, ArrayList<Integer>>>();
+	           mapaActividades.put(actividad, mapaEdades);
+	       }
+	       HashMap<String, ArrayList<Integer>> mapaSexos = mapaEdades.get(rangoEdad);
+	       if (mapaSexos == null) {
+	           mapaSexos = new HashMap<String, ArrayList<Integer>>();
+	           mapaEdades.put(rangoEdad, mapaSexos);
+	       }
+	       mapaSexos.put(sexo, datos);
+	       mapaProvincias.put(localidadOComarca, provincia);
+
+		//System.out.println( provincia + " " + localidadOComarca + " " + actividad  + " " + rangoEdad + " " + sexo + " " + datos);
+		
+	}
+
+	/** Saca a consola todos los datos
+	 * Formato: localidad \t provincia \t actividad \t rangoEdad \t sexo \t lista de datos por años
+	 */
+	public void listaTodosLosDatos() {
+		// TODO
+			for (String localidad : mapaDatos.keySet()) {
+				for (String actividad : mapaDatos.get(localidad).keySet()) {
+					for (String edad : mapaDatos.get(localidad).get(actividad).keySet()) {
+						for (String sexo : mapaDatos.get(localidad).get(actividad).get(edad).keySet()) {
+							ArrayList<Integer> datos = mapaDatos.get(localidad).get(actividad).get(edad).get(sexo);
+							System.out.println(localidad + "\t" + mapaProvincias.get(localidad) + "\t" + actividad + "\t" + edad + "\t" + sexo + "\t" + datos);
+						}
+					}
+				}
+			}
+		}
+	
+	/** Saca a consola los municipios que hayan ganado más del porcentaje indicado de ocupación entre el primer y el último año recogido
+	 * @param porcentajeGanancia	Porcentaje a considerar
+	 */
+	public void listaMunicipiosConGananciaOcupacion( double porcentajeGanancia ) {
+		// TODO
+	}
+
+	/** Saca a consola la lista de municipios con más mujeres ocupadas que hombres (en el último dato disponible)
+	 */
+	public void listaMunicipiosConMasMujeresOcupadasQueHombresActuales() {
+		// TODO
+	}
+
+	/** Saca a fichero de texto las poblaciones existentes, en formato localidad \t provincia (una localidad por cada línea)
+	 * @param nomFichero	Nombre del fichero a generar 
+	 * @throws IOException 
+	 */
+	public void sacaPoblacionesAFichero( String nomFichero ) throws IOException {
+		// TODO
+		BufferedReader reader = new BufferedReader(new FileReader("src/ejercicios/ej5/datosLaborales/datos empleo Euskadi.txt"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(nomFichero));
+		
+		String linea;
+		while ((linea = reader.readLine()) != null) {
+			String[] str= linea.split("\t");
+			
+			writer.write(str[0] + "\t" + str[1]);
+			writer.newLine();	
+		}
+		writer.close();
+		reader.close();
+	}
+
+	/** Guarda los datos a fichero binario
+	 * @param nombreFichero	Nombre del fichero
+	 */
+	public void guardaAFicheroBinario( String nombreFichero ) {
+		// TODO
+	}
+	
+	/** Carga lo datos de fichero binario
+	 * @param nombreFichero	Nombre del fichero
+	 */
+	public void cargaDeFicheroBinario( String nombreFichero ) {
+		// TODO
+	}
+	
+	
+}
